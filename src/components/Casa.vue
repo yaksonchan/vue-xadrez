@@ -1,11 +1,13 @@
 <template>
   <div :class="cor" class="casa">
-      {{coord}}
+      <peca v-if="pecaAtual" :peca="pecaAtual" />
   </div>
 </template>
 
 <script>
+import Peca from './Peca.vue';
 export default {
+  components: { Peca },
     props: {
         coord: String,
         linha: Number,
@@ -27,11 +29,11 @@ export default {
         background-color: #FFFFFF;
     }
     .preto {
-        background-color: #000000;
+        background-color: #474747;
     }
     .casa {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         float: left;
         color: red;
     }
