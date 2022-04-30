@@ -1,5 +1,7 @@
 <template>
-  
+  <div :class="cor" class="casa">
+      {{coord}}
+  </div>
 </template>
 
 <script>
@@ -11,10 +13,10 @@ export default {
         pecaAtual: Object
     },
     computed: {
-        getClass(){
-            if(this.linha + this.coluna % 2 == 0)
-                return "branco";
-            return "preto";
+        cor(){
+            if((this.linha + this.coluna) % 2 == 0)
+                return "preto";
+            return "branco";
         }
     }
 }
@@ -26,5 +28,11 @@ export default {
     }
     .preto {
         background-color: #000000;
+    }
+    .casa {
+        width: 50px;
+        height: 50px;
+        float: left;
+        color: red;
     }
 </style>
