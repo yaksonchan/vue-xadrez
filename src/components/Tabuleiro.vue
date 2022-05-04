@@ -1,10 +1,10 @@
 <template>
     <div class="tabuleiro">
         <div v-for="linha in linhas" :key="'linha:'+linha" class="linha">
-            <casa v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :coluna="index" :linha="linha" :coord="coluna+linha" :pecaAtual="jogoAtual.get(coluna+linha)" />
+            <casa v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :coluna="index" :linha="linha" :coord="coluna+linha" :pecaAtual="jogoAtual.get(coluna+linha)"
+            :casaSelecionada="casaSelecionada" @possiveisMovimentos="possiveisMovimentos = $event" :possiveisMovimentos="possiveisMovimentos"/>
         </div>
-        <button @click="mover('a2', 'a7')">mover</button>
-        <textarea :value="logs" style="width: 480px; height: 200px;" disabled/>
+        <textarea :value="logs.join('\n')" style="margin-top:10px; width: 480px; height: 200px;" disabled/>
     </div>
 </template>
 
@@ -25,7 +25,9 @@ export default {
           jogoAtual: new Map(),
           peao: new Peao('branco'),
           logs: [],
-          vez: "humano"
+          vez: "humano",
+          casaSelecionada: { coord: null },
+          possiveisMovimentos: []
       }
   },
   created(){
@@ -80,14 +82,19 @@ export default {
           if(peca.nome)
             this.jogoAtual.set(de, null);
             this.jogoAtual.set(para, peca);
+            peca.primeiroMovimento = false;
             this.logs.push("Moveu " + peca.nome +" de " + de + " para " + para);
+         this.limpaSelecao();
       },
       trocarVez(){
         if(this.vez == "humano")
             this.vez = "pc";
         else
             this.vez = "humano";
-
+      },
+      limpaSelecao(){
+          this.casaSelecionada = {coord: null};
+          this.possiveisMovimentos = [];
       }
 
   }

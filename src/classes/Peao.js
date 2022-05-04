@@ -5,4 +5,14 @@ export default class Peao {
         this.nome = "Peão"
         this.primeiroMovimento = true;
     }
+
+    getMovimentos(posicaoAtual){
+        var movimentos = [];
+        var colunaAtual = posicaoAtual[0];
+        var linhaAtual = parseInt(posicaoAtual[1]);
+        movimentos.push(colunaAtual+(linhaAtual+1));
+        if(this.primeiroMovimento)
+            movimentos.push(colunaAtual+(linhaAtual+2));
+        return movimentos;
+    }
 }
