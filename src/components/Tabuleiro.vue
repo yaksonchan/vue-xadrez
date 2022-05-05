@@ -95,6 +95,9 @@ export default {
       limpaSelecao(){
           this.casaSelecionada = {coord: null};
           this.possiveisMovimentos = [];
+      },
+      selecionaCasa(coord){
+          this.casaSelecionada.coord = coord;
       }
 
   }

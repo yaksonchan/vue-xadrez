@@ -44,7 +44,7 @@ export default {
             if(this.ePossivelMovimento)
                 this.$parent.mover(this.casaSelecionada.coord, this.coord);
             if(this.pecaAtual && this.pecaAtual.cor == "branco"){
-                this.casaSelecionada.coord = this.coord;
+                this.$parent.selecionaCasa(this.coord);
                 this.emitePossiveisMovimentos();
             }
         },
