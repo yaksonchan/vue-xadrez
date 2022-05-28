@@ -14,7 +14,9 @@ export default {
         coluna: Number,
         pecaAtual: Object,
         casaSelecionada: Object,
-        possiveisMovimentos: Array
+        possiveisMovimentos: Array,
+        index: Number,
+        tabuleiro: Object
 
     },
     computed: {
@@ -34,23 +36,19 @@ export default {
             return false;
         },
         ePossivelMovimento(){
-            if(this.possiveisMovimentos.includes(this.coord))
+            if(this.possiveisMovimentos.find(movimento => movimento.destino == this.index))
                 return true;
             return false;
         }
     },
     methods: {
         selecionaCasa(){
-            if(this.ePossivelMovimento)
-                this.$parent.mover(this.casaSelecionada.coord, this.coord);
-            if(this.pecaAtual && this.pecaAtual.cor == "branco"){
-                this.$parent.selecionaCasa(this.coord);
-                this.emitePossiveisMovimentos();
+            if(this.ePossivelMovimento){
+                this.$parent.mover({index: this.casaSelecionada.index, coord: this.casaSelecionada.coord}, {index: this.index, coord: this.coord});
             }
-        },
-        emitePossiveisMovimentos(){
-            var possiveisMovimentos = this.pecaAtual.getMovimentos(this.coord);
-            this.$emit('possiveisMovimentos', possiveisMovimentos);
+            if(this.pecaAtual && this.pecaAtual.cor == this.tabuleiro.vez){
+                this.$parent.selecionaCasa(this.coord, this.index);
+            }
         }
 
     }

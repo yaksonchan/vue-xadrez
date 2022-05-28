@@ -1,0 +1,115 @@
+import Movimento from "./Movimento";
+
+export default class MovimentacaoUtils {
+    constructor(){
+        this.direcoes = [8,-8,-1,1,7,-7,9,-9];
+        this.distanciaAteABorda = this.gerarDistanciaAteABorda();
+        this.movimentosPossiveis = [];
+    }
+
+    gerarMovimentos(tabuleiro){
+        this.movimentosPossiveis = [];
+        for (let inicio = 0; inicio < 64; inicio++) {
+            var peca = tabuleiro.casas[inicio];
+            if(peca && peca.cor == tabuleiro.vez){
+                if(peca.deslizante){
+                    this.gerarDeslizantes(inicio, peca, tabuleiro);
+                } else {
+                    if(peca.nome == "Peão"){
+                        this.gerarMovimentosPeao(inicio, peca, tabuleiro);
+                    }
+                }
+            }
+        }
+    }
+
+    gerarMovimentosPeao(inicio, peca, tabuleiro){
+        var direcao = peca.cor == "branco" ? 8 : -8;
+
+        var casaAlvo = inicio + direcao;
+        var pecaNoAlvo = tabuleiro.casas[casaAlvo];
+
+        if(this.distanciaAteABorda[inicio][2] != 0){
+            var casaAtaqueOeste = casaAlvo - 1;
+            var pecaCasaAtaqueOeste = tabuleiro.casas[casaAtaqueOeste];
+            if(pecaCasaAtaqueOeste && pecaCasaAtaqueOeste.cor != peca.cor)
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueOeste));
+        }
+        if(this.distanciaAteABorda[inicio][3] != 0){
+            var casaAtaqueLeste = casaAlvo + 1;
+            var pecaCasaAtaqueLeste = tabuleiro.casas[casaAtaqueLeste];
+            if(pecaCasaAtaqueLeste && pecaCasaAtaqueLeste.cor != peca.cor)
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueLeste));
+        }
+
+        if(pecaNoAlvo)
+            return;
+        
+        this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+
+        if(peca.primeiroMovimento){
+            casaAlvo = inicio + direcao * 2;
+            pecaNoAlvo = tabuleiro.casas[casaAlvo];
+            
+            if(pecaNoAlvo && pecaNoAlvo.cor == peca.cor)
+            return;
+        
+            this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+        }
+
+
+        
+    }
+
+    gerarDeslizantes(inicio, peca, tabuleiro){
+        var startIndexDirecao = peca.nome == "Bispo" ? 4 : 0;
+        var endIndexDirecao = peca.nome == "Torre" ? 4 : 8;
+
+        for (let indexDirecao = startIndexDirecao; indexDirecao < endIndexDirecao; indexDirecao++) {
+            for (let n = 0; n < this.distanciaAteABorda[inicio][indexDirecao]; n++) {
+                
+                var casaAlvo = inicio + this.direcoes[indexDirecao] * (n + 1);
+                var pecaNoAlvo = tabuleiro.casas[casaAlvo];
+
+                if(pecaNoAlvo && pecaNoAlvo.cor == peca.cor){
+                    break;
+                }
+                
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+
+                if(pecaNoAlvo)
+                    break;
+
+                
+            }
+            
+        }
+    }
+
+    gerarDistanciaAteABorda(){
+        var distanciaAteABorda = new Array(64);
+        for (let coluna = 0; coluna < 8; coluna++) {
+            for (let linha = 0; linha < 8; linha++) {
+
+                var numNorte = 7 - linha;
+                var numSul = linha;
+                var numOeste = coluna;
+                var numLeste = 7 - coluna;
+
+                var indiceQuadrado = linha * 8 + coluna;
+
+                distanciaAteABorda[indiceQuadrado] = [
+                    numNorte,
+                    numSul,
+                    numOeste,
+                    numLeste,
+                    Math.min(numNorte, numOeste),
+                    Math.min(numSul, numLeste),
+                    Math.min(numNorte, numLeste),
+                    Math.min(numSul, numOeste)
+                ];
+            }
+        }
+        return distanciaAteABorda;
+    }
+}
