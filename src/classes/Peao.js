@@ -4,6 +4,7 @@ export default class Peao {
         this.cor = cor;
         this.nome = "Peão"
         this.primeiroMovimento = true;
+        this.peso = 1;
     }
 
     getMovimentos(posicaoAtual){

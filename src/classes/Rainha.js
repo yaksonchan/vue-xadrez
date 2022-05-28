@@ -4,5 +4,6 @@ export default class Rainha {
         this.cor = cor;
         this.nome = "Rainha";
         this.deslizante = true;
+        this.peso = 4;
     }
 }

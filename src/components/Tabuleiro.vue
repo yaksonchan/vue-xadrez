@@ -108,9 +108,15 @@ export default {
           this.casaSelecionada.coord = coord;
           this.casaSelecionada.index = index;
       },
+      getMelhorMovimentoAleatorio(){
+        var maiorPeso = Math.max(...this.utils.movimentosPossiveis.map(mov => mov.peso));
+        var movimentosDeMaiorPeso = this.utils.movimentosPossiveis.filter(mov => mov.peso == maiorPeso);
+        var indexRandom = Math.floor(Math.random()*movimentosDeMaiorPeso.length);
+        return movimentosDeMaiorPeso[indexRandom];
+      },
       moverPretoAleatorio(){
           setTimeout(() => {
-              var movimento = this.utils.movimentosPossiveis[Math.floor(Math.random()*this.utils.movimentosPossiveis.length)];
+              var movimento = this.getMelhorMovimentoAleatorio();
               var de = { index: movimento.origem, coord: this.$refs['casa:'+movimento.origem][0].coord};
               var para = { index: movimento.destino, coord: this.$refs['casa:'+movimento.destino][0].coord};
               this.mover(de, para);

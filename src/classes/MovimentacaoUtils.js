@@ -33,13 +33,13 @@ export default class MovimentacaoUtils {
             var casaAtaqueOeste = casaAlvo - 1;
             var pecaCasaAtaqueOeste = tabuleiro.casas[casaAtaqueOeste];
             if(pecaCasaAtaqueOeste && pecaCasaAtaqueOeste.cor != peca.cor)
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueOeste));
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueOeste, pecaCasaAtaqueOeste.peso));
         }
         if(this.distanciaAteABorda[inicio][3] != 0){
             var casaAtaqueLeste = casaAlvo + 1;
             var pecaCasaAtaqueLeste = tabuleiro.casas[casaAtaqueLeste];
             if(pecaCasaAtaqueLeste && pecaCasaAtaqueLeste.cor != peca.cor)
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueLeste));
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueLeste, pecaCasaAtaqueLeste.peso));
         }
 
         if(pecaNoAlvo)
@@ -74,11 +74,12 @@ export default class MovimentacaoUtils {
                 if(pecaNoAlvo && pecaNoAlvo.cor == peca.cor){
                     break;
                 }
-                
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
 
-                if(pecaNoAlvo)
+                if(pecaNoAlvo){
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
                     break;
+                } else
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
 
                 
             }

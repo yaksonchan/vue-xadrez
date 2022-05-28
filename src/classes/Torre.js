@@ -4,5 +4,6 @@ export default class Torre {
         this.cor = cor;
         this.nome = "Torre";
         this.deslizante = true;
+        this.peso = 3;
     }
 }

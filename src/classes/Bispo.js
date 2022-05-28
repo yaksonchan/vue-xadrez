@@ -4,5 +4,6 @@ export default class Bispo {
         this.cor = cor;
         this.nome = "Bispo";
         this.deslizante = true;
+        this.peso = 3;
     }
 }
