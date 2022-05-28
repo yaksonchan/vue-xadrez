@@ -1,7 +1,7 @@
 <template>
     <div class="tabuleiro">
         <div v-for="linha in linhas" :key="'linha:'+linha" class="linha">
-            <casa v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :index="(linha-1)*8+index" :linha="linha" :coluna="index" :coord="coluna+linha" :pecaAtual="tabuleiro.casas[(linha-1)*8+index]"
+            <casa :ref="'casa:'+((linha-1)*8+index)" v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :index="(linha-1)*8+index" :linha="linha" :coluna="index" :coord="coluna+linha" :pecaAtual="tabuleiro.casas[(linha-1)*8+index]"
             :casaSelecionada="casaSelecionada" :possiveisMovimentos="possiveisMovimentos" :tabuleiro="tabuleiro"/>
         </div>
         <textarea :value="logs.join('\n')" style="margin-top:10px; width: 480px; height: 200px;" disabled/>
@@ -82,18 +82,22 @@ export default {
       mover(de, para){
           var peca = this.tabuleiro.casas[de.index];
           if(peca.nome){
+            this.logs.push("Moveu " + peca.nome + " " + peca.cor  +" de " + de.coord + " para " + para.coord);
+            if(this.tabuleiro.casas[para.index])
+                this.logs.push(this.tabuleiro.casas[para.index].nome +" " + this.tabuleiro.casas[para.index].cor + " eliminado");
             this.tabuleiro.casas[de.index] = null;
             this.tabuleiro.casas[para.index] = peca;
             peca.primeiroMovimento = false;
-            this.logs.push("Moveu " + peca.nome +" de " + de.coord + " para " + para.coord);
           }
          this.trocarVez();
          this.utils.gerarMovimentos(this.tabuleiro);
          this.limpaSelecao();
       },
       trocarVez(){
-        if(this.tabuleiro.vez == "branco")
+        if(this.tabuleiro.vez == "branco"){
             this.tabuleiro.vez = "preto";
+            this.moverPretoAleatorio();
+        }
         else
             this.tabuleiro.vez = "branco";
       },
@@ -103,6 +107,14 @@ export default {
       selecionaCasa(coord, index){
           this.casaSelecionada.coord = coord;
           this.casaSelecionada.index = index;
+      },
+      moverPretoAleatorio(){
+          setTimeout(() => {
+              var movimento = this.utils.movimentosPossiveis[Math.floor(Math.random()*this.utils.movimentosPossiveis.length)];
+              var de = { index: movimento.origem, coord: this.$refs['casa:'+movimento.origem][0].coord};
+              var para = { index: movimento.destino, coord: this.$refs['casa:'+movimento.destino][0].coord};
+              this.mover(de, para);
+          }, 2000);
       }
 
   }
