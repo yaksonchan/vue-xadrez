@@ -31,6 +31,18 @@ export default class MovimentacaoUtils {
         for (let indexDirecao = 0; indexDirecao < this.direcoes.length; indexDirecao++) {
             var casaAlvo = inicio + this.direcoes[indexDirecao];
             var pecaNoAlvo = tabuleiro.casas[casaAlvo];
+            
+            // Se a distancia pro oeste for 0 então todas pula todas as direções oeste
+            if(this.distanciaAteABorda[inicio][2] == 0){
+                if([2, 4, 7].includes(indexDirecao))
+                    continue
+            }
+
+            // Se a distancia pro leste for 0 então todas pula todas as direções leste
+            if(this.distanciaAteABorda[inicio][3] == 0){
+                if([3, 5, 6].includes(indexDirecao))
+                    continue
+            }
 
             if(pecaNoAlvo && pecaNoAlvo.cor != peca.cor)
                 this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
@@ -45,12 +57,14 @@ export default class MovimentacaoUtils {
         var casaAlvo = inicio + direcao;
         var pecaNoAlvo = tabuleiro.casas[casaAlvo];
 
+        // So testa diagonal se a distancia pro oeste não for 0
         if(this.distanciaAteABorda[inicio][2] != 0){
             var casaAtaqueOeste = casaAlvo - 1;
             var pecaCasaAtaqueOeste = tabuleiro.casas[casaAtaqueOeste];
             if(pecaCasaAtaqueOeste && pecaCasaAtaqueOeste.cor != peca.cor)
                 this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueOeste, pecaCasaAtaqueOeste.peso));
         }
+        // So testa diagonal se a distancia pro leste não for 0
         if(this.distanciaAteABorda[inicio][3] != 0){
             var casaAtaqueLeste = casaAlvo + 1;
             var pecaCasaAtaqueLeste = tabuleiro.casas[casaAtaqueLeste];
