@@ -18,8 +18,24 @@ export default class MovimentacaoUtils {
                     if(peca.nome == "Peão"){
                         this.gerarMovimentosPeao(inicio, peca, tabuleiro);
                     }
+                    if(peca.nome == "Rei"){
+                        this.gerarMovimentosRei(inicio, peca, tabuleiro);
+                    }
                 }
             }
+        }
+    }
+
+
+    gerarMovimentosRei(inicio, peca, tabuleiro){
+        for (let indexDirecao = 0; indexDirecao < this.direcoes.length; indexDirecao++) {
+            var casaAlvo = inicio + this.direcoes[indexDirecao];
+            var pecaNoAlvo = tabuleiro.casas[casaAlvo];
+
+            if(pecaNoAlvo && pecaNoAlvo.cor != peca.cor)
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
+            else if(!pecaNoAlvo)
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
         }
     }
 
