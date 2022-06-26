@@ -105,8 +105,13 @@ export default {
           this.casaSelecionada = {coord: null, index: null};
       },
       selecionaCasa(coord, index){
+        if(coord == this.casaSelecionada.coord)
+            this.casaSelecionada = {coord: null, index: null}
+        else { 
+            console.log("ué")
           this.casaSelecionada.coord = coord;
           this.casaSelecionada.index = index;
+        }
       },
       getMelhorMovimentoAleatorio(){
         var maiorPeso = Math.max(...this.utils.movimentosPossiveis.map(mov => mov.peso));
