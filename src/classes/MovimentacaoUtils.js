@@ -21,6 +21,9 @@ export default class MovimentacaoUtils {
                     if(peca.nome == "Rei"){
                         this.gerarMovimentosRei(inicio, peca, tabuleiro);
                     }
+                    if(peca.nome == "Cavalo"){
+                        this.gerarMovimentosCavalo(inicio, peca, tabuleiro);
+                    }
                 }
             }
         }
@@ -89,6 +92,23 @@ export default class MovimentacaoUtils {
 
 
         
+    }
+
+    gerarMovimentosCavalo(inicio, peca, tabuleiro){
+        var movimentos = [15, 17, -17, -15, 10, -6, 6, -10];
+
+        for(let i = 0; i < movimentos.length; i++){
+            var casaAlvo = inicio + movimentos[i];
+            if(casaAlvo >= 0 && casaAlvo < 64 
+            && this.distanciaAteABorda[inicio][2] >= this.distanciaAteABorda[casaAlvo][2] - 2 
+            && this.distanciaAteABorda[inicio][3] <= this.distanciaAteABorda[casaAlvo][3] + 2){
+                var pecaNoAlvo = tabuleiro.casas[casaAlvo];
+                if(!pecaNoAlvo)
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+                else if(pecaNoAlvo.cor != peca.cor)
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
+            }
+        }
     }
 
     gerarDeslizantes(inicio, peca, tabuleiro){
