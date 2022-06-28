@@ -31,8 +31,9 @@ export default {
   },
   computed: {
       possiveisMovimentos(){
-        if(this.casaSelecionada.index)
+        if(this.casaSelecionada.index != null){
             return this.utils.movimentosPossiveis.filter(movimento => movimento.origem == this.casaSelecionada.index);
+        }
         return [];
       }
   },
