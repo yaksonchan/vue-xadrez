@@ -36,7 +36,15 @@ export default {
             return false;
         },
         ePossivelMovimento(){
-            if(this.possiveisMovimentos.find(movimento => movimento.destino == this.index))
+            if(this.possiveisMovimentos.find(movimento => {
+                if(movimento.diagonalPeao && !this.pecaAtual)
+                    return false;
+                if(movimento.destino == this.index && !this.pecaAtual)
+                    return true;
+                if(movimento.destino == this.index && this.pecaAtual && this.pecaAtual.cor != movimento.pecaOrigem.cor)
+                    return true;
+                return false;
+            }))
                 return true;
             return false;
         }
@@ -46,7 +54,7 @@ export default {
             if(this.ePossivelMovimento){
                 this.$parent.mover({index: this.casaSelecionada.index, coord: this.casaSelecionada.coord}, {index: this.index, coord: this.coord});
             }
-            if(this.pecaAtual && this.pecaAtual.cor == this.tabuleiro.vez){
+            else if(this.pecaAtual && this.pecaAtual.cor == this.tabuleiro.vez){
                 this.$parent.selecionaCasa(this.coord, this.index);
             }
         }

@@ -43,6 +43,7 @@ export default {
       iniciarJogo(){
           this.zerarTabuleiro();
           this.preencherPecasIniciais();
+          this.utils.logs = this.logs;
           this.utils.gerarMovimentos(this.tabuleiro);
       },
       zerarTabuleiro(){
@@ -96,7 +97,7 @@ export default {
       trocarVez(){
         if(this.tabuleiro.vez == "branco"){
             this.tabuleiro.vez = "preto";
-            this.moverPretoAleatorio();
+            //this.moverPretoAleatorio();
         }
         else
             this.tabuleiro.vez = "branco";
@@ -106,16 +107,15 @@ export default {
       },
       selecionaCasa(coord, index){
         if(coord == this.casaSelecionada.coord)
-            this.casaSelecionada = {coord: null, index: null}
+            this.limpaSelecao();
         else { 
-            console.log("ué")
           this.casaSelecionada.coord = coord;
           this.casaSelecionada.index = index;
         }
       },
       getMelhorMovimentoAleatorio(){
-        var maiorPeso = Math.max(...this.utils.movimentosPossiveis.map(mov => mov.peso));
-        var movimentosDeMaiorPeso = this.utils.movimentosPossiveis.filter(mov => mov.peso == maiorPeso);
+        var maiorPeso = Math.max(...this.utils.movimentosPossiveis.map(mov => mov.getPeso()));
+        var movimentosDeMaiorPeso = this.utils.movimentosPossiveis.filter(mov => mov.getPeso() == maiorPeso);
         var indexRandom = Math.floor(Math.random()*movimentosDeMaiorPeso.length);
         return movimentosDeMaiorPeso[indexRandom];
       },

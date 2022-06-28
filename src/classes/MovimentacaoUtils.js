@@ -5,30 +5,70 @@ export default class MovimentacaoUtils {
         this.direcoes = [8,-8,-1,1,7,-7,9,-9];
         this.distanciaAteABorda = this.gerarDistanciaAteABorda();
         this.movimentosPossiveis = [];
+        this.check = false;
+        this.logs = [];
+    }
+
+    testaCheck(tabuleiro){
+        this.check = this.movimentosPossiveis
+            .filter(movimento => !movimento.pecaDestinoEAmigo())
+            .find(movimento => movimento.pecaDestino && movimento.pecaDestino.nome == "Rei" && movimento.pecaDestino.cor == tabuleiro.vez);
+        return this.check;
     }
 
     gerarMovimentos(tabuleiro){
         this.movimentosPossiveis = [];
+        var infoReiPreto = {inicio: null, peca: null};
+        var infoReiBranco = {inicio: null, peca: null};
         for (let inicio = 0; inicio < 64; inicio++) {
             var peca = tabuleiro.casas[inicio];
-            if(peca && peca.cor == tabuleiro.vez){
+            if(peca){
                 if(peca.deslizante){
                     this.gerarDeslizantes(inicio, peca, tabuleiro);
                 } else {
                     if(peca.nome == "Peão"){
                         this.gerarMovimentosPeao(inicio, peca, tabuleiro);
                     }
-                    if(peca.nome == "Rei"){
-                        this.gerarMovimentosRei(inicio, peca, tabuleiro);
-                    }
                     if(peca.nome == "Cavalo"){
                         this.gerarMovimentosCavalo(inicio, peca, tabuleiro);
+                    }
+                    if(peca.nome == "Rei"){
+                        if(peca.cor == "branco"){
+                            infoReiBranco.inicio = inicio;
+                            infoReiBranco.peca = peca;
+                        } else {
+                            infoReiPreto.inicio = inicio;
+                            infoReiPreto.peca = peca;
+                        }
                     }
                 }
             }
         }
+        this.gerarMovimentosReis(infoReiBranco, infoReiPreto, tabuleiro);
+        if(this.testaCheck(tabuleiro)){
+            this.logs.push("Check!")
+            this.filtrarMovimentosDefesa();
+        }
     }
 
+    filtrarMovimentosDefesa(){
+        return;
+    }
+
+    gerarMovimentosReis(infoReiBranco, infoReiPreto, tabuleiro){
+        if(tabuleiro.vez == "branco"){
+            this.gerarMovimentosRei(infoReiPreto.inicio, infoReiPreto.peca, tabuleiro);
+            this.gerarMovimentosRei(infoReiBranco.inicio, infoReiBranco.peca, tabuleiro);
+        } else {
+            this.gerarMovimentosRei(infoReiBranco.inicio, infoReiBranco.peca, tabuleiro);
+            this.gerarMovimentosRei(infoReiPreto.inicio, infoReiPreto.peca, tabuleiro);
+        }
+    }
+
+    inimigoTemAtaque(casa, corAmiga){
+        return this.movimentosPossiveis
+                .find(movimento => movimento.destino == casa && movimento.pecaOrigem.cor != corAmiga);
+    }
 
     gerarMovimentosRei(inicio, peca, tabuleiro){
         for (let indexDirecao = 0; indexDirecao < this.direcoes.length; indexDirecao++) {
@@ -47,10 +87,8 @@ export default class MovimentacaoUtils {
                     continue
             }
 
-            if(pecaNoAlvo && pecaNoAlvo.cor != peca.cor)
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
-            else if(!pecaNoAlvo)
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+            if(tabuleiro.vez != peca.cor || !this.inimigoTemAtaque(casaAlvo, peca.cor))
+                this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca, pecaNoAlvo));
         }
     }
 
@@ -64,21 +102,19 @@ export default class MovimentacaoUtils {
         if(this.distanciaAteABorda[inicio][2] != 0){
             var casaAtaqueOeste = casaAlvo - 1;
             var pecaCasaAtaqueOeste = tabuleiro.casas[casaAtaqueOeste];
-            if(pecaCasaAtaqueOeste && pecaCasaAtaqueOeste.cor != peca.cor)
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueOeste, pecaCasaAtaqueOeste.peso));
+            this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueOeste, peca, pecaCasaAtaqueOeste, true));
         }
         // So testa diagonal se a distancia pro leste não for 0
         if(this.distanciaAteABorda[inicio][3] != 0){
             var casaAtaqueLeste = casaAlvo + 1;
             var pecaCasaAtaqueLeste = tabuleiro.casas[casaAtaqueLeste];
-            if(pecaCasaAtaqueLeste && pecaCasaAtaqueLeste.cor != peca.cor)
-                this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueLeste, pecaCasaAtaqueLeste.peso));
+            this.movimentosPossiveis.push(new Movimento(inicio, casaAtaqueLeste, peca, pecaCasaAtaqueLeste, true));
         }
 
         if(pecaNoAlvo)
             return;
         
-        this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+        this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca));
 
         if(peca.primeiroMovimento){
             casaAlvo = inicio + direcao * 2;
@@ -87,7 +123,7 @@ export default class MovimentacaoUtils {
             if(pecaNoAlvo && pecaNoAlvo.cor == peca.cor)
             return;
         
-            this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+            this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca));
         }
 
 
@@ -104,9 +140,9 @@ export default class MovimentacaoUtils {
             && this.distanciaAteABorda[inicio][3] <= this.distanciaAteABorda[casaAlvo][3] + 2){
                 var pecaNoAlvo = tabuleiro.casas[casaAlvo];
                 if(!pecaNoAlvo)
-                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca));
                 else if(pecaNoAlvo.cor != peca.cor)
-                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca, pecaNoAlvo));
             }
         }
     }
@@ -126,10 +162,10 @@ export default class MovimentacaoUtils {
                 }
 
                 if(pecaNoAlvo){
-                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, pecaNoAlvo.peso));
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca, pecaNoAlvo));
                     break;
                 } else
-                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo));
+                    this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca));
 
                 
             }
