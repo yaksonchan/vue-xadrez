@@ -137,7 +137,7 @@ export default class MovimentacaoUtils {
             var casaAlvo = inicio + movimentos[i];
             if(casaAlvo >= 0 && casaAlvo < 64 
             && this.distanciaAteABorda[inicio][2] >= this.distanciaAteABorda[casaAlvo][2] - 2 
-            && this.distanciaAteABorda[inicio][3] <= this.distanciaAteABorda[casaAlvo][3] + 2){
+            && this.distanciaAteABorda[inicio][3] >= this.distanciaAteABorda[casaAlvo][3] - 2){
                 var pecaNoAlvo = tabuleiro.casas[casaAlvo];
                 if(!pecaNoAlvo)
                     this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca));
