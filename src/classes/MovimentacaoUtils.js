@@ -120,7 +120,7 @@ export default class MovimentacaoUtils {
             casaAlvo = inicio + direcao * 2;
             pecaNoAlvo = tabuleiro.casas[casaAlvo];
             
-            if(pecaNoAlvo && pecaNoAlvo.cor == peca.cor)
+            if(pecaNoAlvo)
             return;
         
             this.movimentosPossiveis.push(new Movimento(inicio, casaAlvo, peca));
