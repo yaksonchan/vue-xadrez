@@ -59,6 +59,14 @@ export default {
             }
         }
 
+    },
+    watch: {
+        pecaAtual(peca){
+            if(this.linha == 8 && peca && peca.cor == "branco" && peca.nome == "Peão")
+                this.$emit("modalEvolucao", this.index, "branco");
+            if(this.linha == 1 && peca && peca.cor == "preto" && peca.nome == "Peão")
+                this.$emit("modalEvolucao", this.index, "preto");
+        }
     }
 }
 </script>
