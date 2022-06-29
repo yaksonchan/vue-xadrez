@@ -8,7 +8,7 @@ export default class Movimento {
     }
 
     getPeso(){
-        return this.pecaDestino.pecaDestino ? this.pecaDestino.pecaDestino.peso : 0;
+        return this.pecaDestino ? this.pecaDestino.peso : 0;
     }
 
     pecaDestinoEAmigo(){

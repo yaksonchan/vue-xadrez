@@ -2,9 +2,13 @@
     <div class="tabuleiro">
         <div v-for="linha in linhas" :key="'linha:'+linha" class="linha">
             <casa :ref="'casa:'+((linha-1)*8+index)" v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :index="(linha-1)*8+index" :linha="linha" :coluna="index" :coord="coluna+linha" :pecaAtual="tabuleiro.casas[(linha-1)*8+index]"
-            :casaSelecionada="casaSelecionada" :possiveisMovimentos="possiveisMovimentos" :tabuleiro="tabuleiro"/>
+            :casaSelecionada="casaSelecionada" :possiveisMovimentos="possiveisMovimentos" :tabuleiro="tabuleiro"
+            @modalEvolucao="abrirModalEvolucao"/>
         </div>
         <textarea :value="logs.join('\n')" style="margin-top:10px; width: 480px; height: 200px;" disabled/>
+        <modal-evolucao ref="evolucao" @escolheu="evoluiu" :automatico="automatico" />
+        <input type = "checkbox" id = "automatico" v-model="automatico">
+        <label for = "automatico"> Mover preto automatico? </label>
     </div>
 </template>
 
@@ -17,8 +21,9 @@ import Bispo from '../classes/Bispo'
 import Rainha from '../classes/Rainha'
 import Rei from '../classes/Rei'
 import MovimentacaoUtils from '../classes/MovimentacaoUtils'
+import ModalEvolucao from './ModalEvolucao.vue'
 export default {
-  components: { Casa },
+  components: { Casa, ModalEvolucao },
   data(){
       return {
           linhas: [8, 7, 6, 5, 4, 3, 2, 1],
@@ -26,7 +31,8 @@ export default {
           logs: [],
           casaSelecionada: { coord: null, index: null },
           tabuleiro: {vez: "branco", casas: new Array(64)},
-          utils: new MovimentacaoUtils()
+          utils: new MovimentacaoUtils(),
+          automatico: true
       }
   },
   computed: {
@@ -98,7 +104,8 @@ export default {
       trocarVez(){
         if(this.tabuleiro.vez == "branco"){
             this.tabuleiro.vez = "preto";
-            //this.moverPretoAleatorio();
+            if(this.automatico)
+              this.moverAleatorioTimeout();
         }
         else
             this.tabuleiro.vez = "branco";
@@ -115,18 +122,32 @@ export default {
         }
       },
       getMelhorMovimentoAleatorio(){
-        var maiorPeso = Math.max(...this.utils.movimentosPossiveis.map(mov => mov.getPeso()));
-        var movimentosDeMaiorPeso = this.utils.movimentosPossiveis.filter(mov => mov.getPeso() == maiorPeso);
+        var movimentos = this.utils.movimentosPossiveis.filter(mov => !mov.pecaDestinoEAmigo() && mov.pecaOrigem.cor == this.tabuleiro.vez && !(mov.diagonalPeao && !mov.pecaDestino));
+        var maiorPeso = Math.max(...movimentos.map(mov => mov.getPeso()));
+        var movimentosDeMaiorPeso = movimentos.filter(mov => mov.getPeso() == maiorPeso);
         var indexRandom = Math.floor(Math.random()*movimentosDeMaiorPeso.length);
         return movimentosDeMaiorPeso[indexRandom];
       },
-      moverPretoAleatorio(){
-          setTimeout(() => {
-              var movimento = this.getMelhorMovimentoAleatorio();
-              var de = { index: movimento.origem, coord: this.$refs['casa:'+movimento.origem][0].coord};
-              var para = { index: movimento.destino, coord: this.$refs['casa:'+movimento.destino][0].coord};
-              this.mover(de, para);
-          }, 2000);
+      moverAleatorioTimeout(){
+        setTimeout(() => this.moverAleatorio(), 2000);
+      },
+      moverAleatorio(){
+        var movimento = this.getMelhorMovimentoAleatorio();
+        console.log(movimento);
+        var de = { index: movimento.origem, coord: this.$refs['casa:'+movimento.origem][0].coord};
+        var para = { index: movimento.destino, coord: this.$refs['casa:'+movimento.destino][0].coord};
+        this.mover(de, para);
+      },
+      jogarSozinho(){
+        setInterval(() => this.moverAleatorio(), 1000);
+      },
+      evoluiu(casaIndex, peca){
+        this.logs.push(`Evoluiu ${this.tabuleiro.casas[casaIndex].nome} ${this.tabuleiro.casas[casaIndex].cor} para ${peca.nome}`);
+        this.tabuleiro.casas[casaIndex] = peca;
+        this.utils.gerarMovimentos(this.tabuleiro);
+      },
+      abrirModalEvolucao(casaIndex, cor){
+        this.$refs.evolucao.abrirModal(casaIndex, cor);
       }
 
   }
