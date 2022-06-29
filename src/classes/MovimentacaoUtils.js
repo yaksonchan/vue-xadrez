@@ -73,6 +73,7 @@ export default class MovimentacaoUtils {
     gerarMovimentosRei(inicio, peca, tabuleiro){
         for (let indexDirecao = 0; indexDirecao < this.direcoes.length; indexDirecao++) {
             var casaAlvo = inicio + this.direcoes[indexDirecao];
+            if(casaAlvo > 63 || casaAlvo < 0) continue;
             var pecaNoAlvo = tabuleiro.casas[casaAlvo];
             
             // Se a distancia pro oeste for 0 então todas pula todas as direções oeste
