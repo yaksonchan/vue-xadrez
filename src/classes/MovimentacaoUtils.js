@@ -7,6 +7,7 @@ export default class MovimentacaoUtils {
         this.movimentosPossiveis = [];
         this.check = false;
         this.logs = [];
+        this.xequeMate = false;
     }
 
     testaCheck(tabuleiro){
@@ -46,7 +47,7 @@ export default class MovimentacaoUtils {
         }
         this.gerarMovimentosReis(infoReiBranco, infoReiPreto, tabuleiro);
         if(this.testaCheck(tabuleiro)){
-            this.logs.push("Check!")
+            this.logs.push("Xeque!")
             this.filtrarMovimentosDefesa();
         }
     }
@@ -56,12 +57,18 @@ export default class MovimentacaoUtils {
     }
 
     gerarMovimentosReis(infoReiBranco, infoReiPreto, tabuleiro){
-        if(tabuleiro.vez == "branco"){
-            this.gerarMovimentosRei(infoReiPreto.inicio, infoReiPreto.peca, tabuleiro);
-            this.gerarMovimentosRei(infoReiBranco.inicio, infoReiBranco.peca, tabuleiro);
+        if(!infoReiBranco.inicio || !infoReiPreto.inicio){
+            this.movimentosPossiveis = [];
+            this.xequeMate = true;
+            this.logs.push("Xeque Mate!")
         } else {
-            this.gerarMovimentosRei(infoReiBranco.inicio, infoReiBranco.peca, tabuleiro);
-            this.gerarMovimentosRei(infoReiPreto.inicio, infoReiPreto.peca, tabuleiro);
+            if(tabuleiro.vez == "branco"){
+                this.gerarMovimentosRei(infoReiPreto.inicio, infoReiPreto.peca, tabuleiro);
+                this.gerarMovimentosRei(infoReiBranco.inicio, infoReiBranco.peca, tabuleiro);
+            } else {
+                this.gerarMovimentosRei(infoReiBranco.inicio, infoReiBranco.peca, tabuleiro);
+                this.gerarMovimentosRei(infoReiPreto.inicio, infoReiPreto.peca, tabuleiro);
+            }
         }
     }
 

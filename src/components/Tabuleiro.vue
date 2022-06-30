@@ -21,6 +21,11 @@
           <div class="col">Bem vindo ao Vue Xadrez, um jogo criado totalmente em Vue JS e feito por alunos da Universidade Federal Fluminense no ano de 2022. O jogo segue todas as regras conhecidas e as jogadas do computador são meramente aleatórias com prioridade em eliminar peças do oponente.</div>
         </div>
         <hr />
+        <div  v-if="utils.xequeMate" class="row justify-content-end">
+          <div class="col">
+            <h3>Xeque Mate!</h3>
+          </div>
+        </div>
         <div class="row justify-content-end">
           <div class="col"></div>
           <div class="col" v-if="!jogoIniciado">
@@ -93,6 +98,7 @@ export default {
   methods: {
       iniciarJogo(){
           this.jogoIniciado = true;
+          this.utils = new MovimentacaoUtils();
           this.zerarTabuleiro();
           this.preencherPecasIniciais();
           this.logs = [];
@@ -201,7 +207,8 @@ export default {
         this.utils.gerarMovimentos(this.tabuleiro);
       },
       abrirModalEvolucao(casaIndex, cor){
-        this.$refs.evolucao.abrirModal(casaIndex, cor);
+        if(!this.utils.xequeMate)
+          this.$refs.evolucao.abrirModal(casaIndex, cor);
       }
 
   }
