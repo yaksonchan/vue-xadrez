@@ -52,12 +52,12 @@ export default {
     },
     methods: {
         selecionaCasa(){
-            if(this.pecaAtual && this.pecaAtual.cor == "preto" && this.automatico)
-                return;
             if(this.ePossivelMovimento){
                 this.$parent.mover({index: this.casaSelecionada.index, coord: this.casaSelecionada.coord}, {index: this.index, coord: this.coord});
             }
             else if(this.pecaAtual && this.pecaAtual.cor == this.tabuleiro.vez){
+                if(this.pecaAtual && this.pecaAtual.cor == "preto" && this.automatico)
+                    return;
                 this.$parent.selecionaCasa(this.coord, this.index);
             }
         }
