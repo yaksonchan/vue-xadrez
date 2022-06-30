@@ -30,7 +30,7 @@
         <div class="row align-items-end justify-content-between">
           <div class="col">
             <button v-if="!jogoIniciado" type="button" class="btn btn-primary btn-lg btn-block" @click="iniciarJogo()">Iniciar jogo</button>
-            <button v-if="jogoIniciado" type="button" class="btn btn-primary btn-lg btn-block" @click="reiniciarJogo()">Reiniciar jogo</button>
+            <button v-if="jogoIniciado" type="button" class="btn btn-primary btn-lg btn-block" @click="iniciarJogo()">Reiniciar jogo</button>
             <button v-if="jogoIniciado" type="button" class="btn btn-danger btn-lg btn-block" @click="pararJogo()">Parar jogo</button>
           </div>
           <div class="col">
@@ -95,16 +95,16 @@ export default {
           this.jogoIniciado = true;
           this.zerarTabuleiro();
           this.preencherPecasIniciais();
+          this.logs = [];
           this.utils.logs = this.logs;
           this.utils.gerarMovimentos(this.tabuleiro);
-      },
-      reiniciarJogo(){
-        this.logs = [];
-        this.iniciarJogo();
+          this.tabuleiro.vez = "branco";
+          this.limpaSelecao();
       },
       pararJogo(){
         this.logs = [];
         this.zerarTabuleiro();
+        this.limpaSelecao();
         this.jogoIniciado = false;
       },
       zerarTabuleiro(){
