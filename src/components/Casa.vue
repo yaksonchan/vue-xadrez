@@ -16,7 +16,8 @@ export default {
         casaSelecionada: Object,
         possiveisMovimentos: Array,
         index: Number,
-        tabuleiro: Object
+        tabuleiro: Object,
+        automatico: Boolean
 
     },
     computed: {
@@ -51,6 +52,8 @@ export default {
     },
     methods: {
         selecionaCasa(){
+            if(this.pecaAtual && this.pecaAtual.cor == "preto" && this.automatico)
+                return;
             if(this.ePossivelMovimento){
                 this.$parent.mover({index: this.casaSelecionada.index, coord: this.casaSelecionada.coord}, {index: this.index, coord: this.coord});
             }
@@ -85,8 +88,8 @@ export default {
         background-color: #ECEF88;
     }
     .casa {
-        width: 60px;
-        height: 60px;
+        width: 75px;
+        height: 75px;
         float: left;
         color: red;
     }

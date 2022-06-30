@@ -1,15 +1,58 @@
 <template>
-    <div class="tabuleiro">
-        <div v-for="linha in linhas" :key="'linha:'+linha" class="linha">
-            <casa :ref="'casa:'+((linha-1)*8+index)" v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :index="(linha-1)*8+index" :linha="linha" :coluna="index" :coord="coluna+linha" :pecaAtual="tabuleiro.casas[(linha-1)*8+index]"
-            :casaSelecionada="casaSelecionada" :possiveisMovimentos="possiveisMovimentos" :tabuleiro="tabuleiro"
-            @modalEvolucao="abrirModalEvolucao"/>
+  <div class="container" style="min-width: 615px;">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-6">
+        <div class="tabuleiro">
+            <div v-for="linha in linhas" :key="'linha:'+linha" class="linha">
+                <casa :ref="'casa:'+((linha-1)*8+index)" v-for="(coluna, index) in colunas" :key="'coluna:'+coluna" :index="(linha-1)*8+index" :linha="linha" :coluna="index" :coord="coluna+linha" :pecaAtual="tabuleiro.casas[(linha-1)*8+index]"
+                :casaSelecionada="casaSelecionada" :possiveisMovimentos="possiveisMovimentos" :tabuleiro="tabuleiro"
+                @modalEvolucao="abrirModalEvolucao" :automatico="automatico"/>
+            </div>
         </div>
-        <textarea :value="logs.join('\n')" style="margin-top:10px; width: 480px; height: 200px;" disabled/>
-        <modal-evolucao ref="evolucao" @escolheu="evoluiu" :automatico="automatico" />
-        <input type = "checkbox" id = "automatico" v-model="automatico">
-        <label for = "automatico"> Mover preto automatico? </label>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="row mt-3">
+          <div class="col">
+            <h2 style="text-align:center;">Vue Xadrez</h2>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col">Bem vindo ao Vue Xadrez, um jogo criado totalmente em Vue JS e feito por alunos da Universidade Federal Fluminense no ano de 2022. O jogo segue todas as regras conhecidas e as jogadas do computador são meramente aleatórias com prioridade em eliminar peças do oponente.</div>
+        </div>
+        <hr />
+        <div class="row justify-content-end">
+          <div class="col"></div>
+          <div class="col" v-if="!jogoIniciado">
+            Selecione o modo:
+          </div>
+        </div>
+        <div class="row align-items-end justify-content-between">
+          <div class="col">
+            <button v-if="!jogoIniciado" type="button" class="btn btn-primary btn-lg btn-block" @click="iniciarJogo()">Iniciar jogo</button>
+            <button v-if="jogoIniciado" type="button" class="btn btn-primary btn-lg btn-block" @click="reiniciarJogo()">Reiniciar jogo</button>
+            <button v-if="jogoIniciado" type="button" class="btn btn-danger btn-lg btn-block" @click="pararJogo()">Parar jogo</button>
+          </div>
+          <div class="col">
+            <div v-if="!jogoIniciado" class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-secondary active">
+                <input type="radio" name="options" @click="automatico = true" autocomplete="off" checked> Computador
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="options" @click="automatico = false" autocomplete="off"> Humano
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <textarea :value="logs.join('\n')" style="margin-top:10px; width: 100%; height: 300px;" disabled/>
+          </div>
+        </div>
+      </div>
     </div>
+    <modal-evolucao ref="evolucao" @escolheu="evoluiu" :automatico="automatico" />
+  </div>
 </template>
 
 <script>
@@ -32,7 +75,8 @@ export default {
           casaSelecionada: { coord: null, index: null },
           tabuleiro: {vez: "branco", casas: new Array(64)},
           utils: new MovimentacaoUtils(),
-          automatico: true
+          automatico: true,
+          jogoIniciado: false
       }
   },
   computed: {
@@ -44,14 +88,24 @@ export default {
       }
   },
   created(){
-      this.iniciarJogo();
+      //this.iniciarJogo();
   },
   methods: {
       iniciarJogo(){
+          this.jogoIniciado = true;
           this.zerarTabuleiro();
           this.preencherPecasIniciais();
           this.utils.logs = this.logs;
           this.utils.gerarMovimentos(this.tabuleiro);
+      },
+      reiniciarJogo(){
+        this.logs = [];
+        this.iniciarJogo();
+      },
+      pararJogo(){
+        this.logs = [];
+        this.zerarTabuleiro();
+        this.jogoIniciado = false;
       },
       zerarTabuleiro(){
           this.tabuleiro.casas = new Array(64);
@@ -157,13 +211,13 @@ export default {
 
 <style scoped>
     .linha {
-        width: 480px;
+        width: 600px;
     }
 
     .tabuleiro {
-        width: 480px;
-        height: 480px;
-        margin: 0 auto;
-        border: 1px solid black;
+        width: 600px;
+        height: 600px;
+        margin-top: 10px;
+        outline:4px solid black;
     }
 </style>

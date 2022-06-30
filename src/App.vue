@@ -1,5 +1,5 @@
 <template>
-  <div class="scale">
+  <div>
     <tabuleiro />
   </div>
 </template>
@@ -16,7 +16,4 @@ export default {
 </script>
 
 <style scoped>
-.scale {
-  min-height: 1000px;
-}
 </style>
